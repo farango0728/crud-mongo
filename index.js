@@ -12,6 +12,7 @@ const { mongoDBHelpers } = require('./helpers');
 
 (async () => {
     await mongoDBHelpers.connect();
+    +process.argv[2] && require('./databases/mongo/fake')();
     require('./server');
   })();
 

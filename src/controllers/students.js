@@ -5,7 +5,7 @@ const {
 
 module.exports = {
     getAll: async (req, res) => {
-        const students = await studentsModel.find();
+        const students = await studentsModel.find().sort({age: 1});
         res.json(students);
     },
     createOne: async (req, res) =>{
@@ -28,5 +28,47 @@ module.exports = {
         const { _id } = req.params;
         const deletedStudent = await studentsModel.findByIdAndDelete(_id);
         res.send(`${deletedStudent.firstName} deleted`);
-    }
+    },
+    assignCourse: async (req, res) => {
+        const { _id } = req.params;
+        const { course } = req.body;
+        const studentUpdated = await studentsModel.findByIdAndUpdate(
+          _id,
+          {
+            $push: { courses: course },
+          },
+          { useFindAndModify: false }
+        );
+        res.send(`${studentUpdated.firstName} updated`);
+      },
+      removeFromCourse: async (req, res) => {
+        const { _id } = req.params;
+        const { course } = req.body;
+        const studentUpdated = await studentsModel.findByIdAndUpdate(
+          _id,
+          {
+            $pull: { courses: course },
+          },
+          { useFindAndModify: false }
+        );
+        res.send(`${studentUpdated.firstName} updated`);
+      },
+      count: async (req, res) => {
+        const total = await studentsModel.find().countDocuments();
+        res.json({ total });
+      },
+      getByfirstName: async (req, res) => {
+        const { firstName } = req.params;
+        const studentsFound = await studentsModel.find({
+          firstName: { $eq: firstName },
+        });
+        res.json(studentsFound);
+      },
+      getStudentsAgeGreaterThan: async (req, res) => {
+        const { age } = req.query;
+        const studentsFound = await studentsModel
+          .find({ age: { $gt: age } })
+          .limit(2);
+        res.json(studentsFound);
+      },
 }

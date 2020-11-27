@@ -30,5 +30,29 @@ module.exports = {
         const removed = await coursesModel.findByIdAndDelete(_id);
         console.log(removed);
         res.send(`${removed.name} deleted from database`);
-    }
+    },
+    assignTeacher : async (req, res) =>{
+        const { _id } = req.params;
+        const { teacher } = req.body;
+        const courseUpdated = await coursesModel.findByIdAndUpdate(
+        _id,
+        {
+            $push: { teachers: teacher },
+        },
+        { useFindAndModify: false }
+        );
+        res.send(`${courseUpdated.name} updated`);
+    },
+    removeTeacher: async (req, res) => {
+        const { _id } = req.params;
+        const { teacher } = req.body;
+        const courseUpdated = await coursesModel.findByIdAndUpdate(
+          _id,
+          {
+            $pull: { teachers: teacher },
+          },
+          { useFindAndModify: false }
+        );
+        res.send(`${courseUpdated.name} updated`);
+      },
 }
